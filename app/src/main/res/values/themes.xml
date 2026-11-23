@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gimbo_base">#FF07080C</color>
+
+    <style name="Theme.Gimbo" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/gimbo_base</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowShowWallpaper">false</item>
+        <item name="android:statusBarColor">@color/gimbo_base</item>
+        <item name="android:navigationBarColor">@color/gimbo_base</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>
+    </style>
+</resources>

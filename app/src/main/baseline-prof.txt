@@ -1,0 +1,6 @@
+HSPLdev/hiarni/gimbo/launcher/**;->**(**)**
+Ldev/hiarni/gimbo/launcher/**;
+HSPLandroidx/compose/**;->**(**)**
+Landroidx/compose/**;
+HSPLkotlinx/coroutines/**;->**(**)**
+Lkotlinx/coroutines/**;
