@@ -34,11 +34,12 @@ jobs:
         run: |
           tag="v$VERSION"
           apk="Gimbo-Launcher-v$VERSION.apk"
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" >/dev/null 2>&1; then
+            echo "::notice::$tag existiert schon – kein neues Release. Für ein Release die Version erhöhen."
+            exit 0
+          fi
           awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
           printf '\nEinrichtung siehe README · Setup: see README.en.md\n' >> notes.md
-          if gh release view "$tag" >/dev/null 2>&1; then
-            gh release delete "$tag" --yes --cleanup-tag
-          fi
           gh release create "$tag" "$apk" --title "Gimbo Launcher v$VERSION" --notes-file notes.md --target "$GITHUB_SHA"
           for t in $(gh release list --limit 100 --json tagName -q '.[].tagName'); do
             [ "$t" = "$tag" ] || gh release delete "$t" --yes --cleanup-tag
