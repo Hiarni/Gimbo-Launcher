@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.15.1
+
+- Updates sind oben rechts als farbiger Knopf deutlich sichtbar · Updates show up clearly as a colored button at the top right
+
 ## 1.15.0
 
 - Weiterschauen für Jellyfin, Plex, Emby und Kodi, jede Quelle als eigene Reihe · Continue watching for Jellyfin, Plex, Emby and Kodi, each source as its own row

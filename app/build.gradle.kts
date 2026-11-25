@@ -14,8 +14,8 @@ android {
         applicationId = "dev.hiarni.gimbo.launcher"
         minSdk = 22
         targetSdk = 35
-        versionCode = 35
-        versionName = "1.15.0"
+        versionCode = 36
+        versionName = "1.15.1"
     }
 
     // Signatur

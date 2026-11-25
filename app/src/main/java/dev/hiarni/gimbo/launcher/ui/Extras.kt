@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -173,5 +175,53 @@ internal fun AppsButton(enabled: Boolean, onClick: () -> Unit) {
                 drawCircle(tint, radius = r, center = Offset(size.width * (0.15f + 0.35f * i), size.height * (0.15f + 0.35f * j)))
             }
         }
+    }
+}
+
+@Composable
+internal fun UpdateButton(text: String, enabled: Boolean, onClick: () -> Unit) {
+    var focused by remember { mutableStateOf(false) }
+    val p by animateFloatAsState(if (focused) 1f else 0f, tween(180), label = "update")
+    val purple = Color(0xFF8E4FD6)
+    val blue = Color(0xFF3D6FE8)
+    Row(
+        Modifier
+            .drawBehind {
+                drawRoundRect(
+                    androidx.compose.ui.graphics.Brush.radialGradient(
+                        listOf(purple.copy(alpha = 0.5f + 0.2f * p), Color.Transparent),
+                        center = center,
+                        radius = size.width * 0.75f,
+                    ),
+                    topLeft = Offset(-size.width * 0.25f, -size.height * 0.6f),
+                    size = Size(size.width * 1.5f, size.height * 2.2f),
+                )
+            }
+            .graphicsLayer {
+                val s = 1f + 0.08f * p
+                scaleX = s
+                scaleY = s
+            }
+            .height(52.dp)
+            .clip(CircleShape)
+            .background(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(purple, blue)))
+            .border(3.dp, Color.White.copy(alpha = 0.95f * p), CircleShape)
+            .onFocusChanged { focused = it.isFocused }
+            .tvClickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 22.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Canvas(Modifier.size(20.dp)) {
+            val w = size.width
+            val stroke = Stroke(width = w * 0.13f, cap = StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round)
+            val path = androidx.compose.ui.graphics.Path().apply {
+                moveTo(w * 0.5f, w * 0.12f); lineTo(w * 0.5f, w * 0.68f)
+                moveTo(w * 0.24f, w * 0.44f); lineTo(w * 0.5f, w * 0.70f); lineTo(w * 0.76f, w * 0.44f)
+                moveTo(w * 0.18f, w * 0.90f); lineTo(w * 0.82f, w * 0.90f)
+            }
+            drawPath(path, Color.White, style = stroke)
+        }
+        Spacer(Modifier.width(10.dp))
+        BasicText(text, style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 17.sp, color = Color.White))
     }
 }

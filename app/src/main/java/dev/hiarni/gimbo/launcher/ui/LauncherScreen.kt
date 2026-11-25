@@ -579,8 +579,8 @@ fun LauncherScreen(
                     }
                     val update = Updater.available
                     if (editable && update != null) {
-                        Pill(trf("Update {0}", "Update {0}", update.version), homeFocusable) { push(Sheet.Update) }
-                        Spacer(Modifier.width(10.dp))
+                        UpdateButton(trf("Update {0}", "Update {0}", update.version), homeFocusable) { push(Sheet.Update) }
+                        Spacer(Modifier.width(14.dp))
                     }
                     if (showHomeSetup) {
                         Pill(tr("Home-Taste einrichten", "Set up Home button"), homeFocusable, onOpenHomeSetup)
