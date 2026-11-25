@@ -38,8 +38,26 @@ jobs:
             echo "::notice::$tag existiert schon – kein neues Release. Für ein Release die Version erhöhen."
             exit 0
           fi
-          awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
-          printf '\nEinrichtung siehe README · Setup: see README.en.md\n' >> notes.md
+          section() { awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{f=0} f && /^- /' "$1"; }
+          de=$(section CHANGELOG.md)
+          en=$(section CHANGELOG.en.md)
+          if [ -z "$de" ] || [ "$(echo "$de" | wc -l)" != "$(echo "$en" | wc -l)" ]; then
+            echo "::error::$VERSION fehlt in CHANGELOG.md/CHANGELOG.en.md oder die Punkte passen nicht zusammen."
+            exit 1
+          fi
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main"
+          {
+            echo "### 🇩🇪 Deutsch"; echo
+            echo "$de" | sed 's/^- /* /'; echo
+            echo "### 🇬🇧 English"; echo
+            echo "$en" | sed 's/^- /* /'; echo
+            echo "---"; echo
+            echo "🇩🇪 [Einrichtung]($url/README.md) · [Alle Änderungen]($url/CHANGELOG.md) &nbsp;·&nbsp; 🇬🇧 [Setup]($url/README.en.md) · [Changelog]($url/CHANGELOG.en.md)"
+            # Für die Hinweise im Launcher (auch ältere Versionen): je Punkt „- Deutsch · English“
+            echo; echo "<!--"
+            paste <(echo "$de") <(echo "$en") | sed 's/\t- / · /'
+            echo "-->"
+          } > notes.md
           gh release create "$tag" "$apk" --title "Gimbo Launcher v$VERSION" --notes-file notes.md --target "$GITHUB_SHA"
           for t in $(gh release list --limit 100 --json tagName -q '.[].tagName'); do
             [ "$t" = "$tag" ] || gh release delete "$t" --yes --cleanup-tag

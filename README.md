@@ -8,7 +8,7 @@
 
 **Ruhige Startseite für Fire TV: Uhr, Wetter und deine Apps als Kacheln.**
 
-[Download](../../releases/latest) · [Einrichten](#einrichten) · [Funktionen](#funktionen) · [Sprachen](#sprachen)
+[Download](../../releases/latest) · [Einrichten](#einrichten) · [Funktionen](#funktionen) · [Sprachen](#sprachen) · [Änderungen](CHANGELOG.md)
 
 </div>
 

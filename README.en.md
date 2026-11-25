@@ -8,7 +8,7 @@
 
 **A calm home screen for Fire TV: clock, weather and your apps as tiles.**
 
-[Download](../../releases/latest) · [Setup](#setup) · [Features](#features) · [Languages](#languages)
+[Download](../../releases/latest) · [Setup](#setup) · [Features](#features) · [Languages](#languages) · [Changelog](CHANGELOG.en.md)
 
 </div>
 
