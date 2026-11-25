@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.16.0
+
+- Neues App-Icon, auch als Kachel in der App-Reihe von Fire OS · New app icon, also as the tile in the Fire OS app row
+
 ## 1.15.4
 
 - Nach dem Einschalten holt sich der Launcher nicht mehr nach vorne, wenn schon eine App läuft · After switching on, the launcher no longer jumps to the front while an app is already running
