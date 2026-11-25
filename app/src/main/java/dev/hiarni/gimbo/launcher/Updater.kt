@@ -37,7 +37,8 @@ object Updater {
     private const val KEY_INFO = "update_info"
     const val KEY_REOPEN = "update_reopen"
     private const val ACTION_STATUS = "dev.hiarni.gimbo.launcher.UPDATE_STATUS"
-    private const val CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000L
+    private const val KEY_CHECKED_VERSION = "update_checked_version"
+    private const val CHECK_INTERVAL_MS = 3 * 60 * 60 * 1000L
 
     var state by mutableStateOf<UpdateState>(UpdateState.Idle)
         private set
@@ -78,8 +79,12 @@ object Updater {
         if (isNewer(info.version, currentVersion(context))) state = UpdateState.Available(info)
     }
 
-    fun dueForCheck(context: Context): Boolean =
-        !busy && System.currentTimeMillis() - prefs(context).getLong(KEY_CHECKED, 0L) > CHECK_INTERVAL_MS
+    fun dueForCheck(context: Context): Boolean {
+        if (busy) return false
+        val p = prefs(context)
+        if (p.getString(KEY_CHECKED_VERSION, null) != currentVersion(context)) return true
+        return System.currentTimeMillis() - p.getLong(KEY_CHECKED, 0L) > CHECK_INTERVAL_MS
+    }
 
     suspend fun check(context: Context): UpdateInfo? {
         if (busy) return available
@@ -92,7 +97,9 @@ object Updater {
                 ?: UpdateState.Failed(tr("Keine Verbindung zu GitHub", "Can't reach GitHub"), null)
             return previous
         }
-        val edit = prefs(context).edit().putLong(KEY_CHECKED, System.currentTimeMillis())
+        val edit = prefs(context).edit()
+            .putLong(KEY_CHECKED, System.currentTimeMillis())
+            .putString(KEY_CHECKED_VERSION, currentVersion(context))
         if (info != null && isNewer(info.version, currentVersion(context))) {
             edit.putString(
                 KEY_INFO,

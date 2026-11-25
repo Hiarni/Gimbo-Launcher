@@ -31,7 +31,7 @@ adb shell am force-stop dev.hiarni.gimbo.launcher
 Danach öffnet die Home-Taste den Gimbo Launcher. Fire OS erlaubt keinen fremden Launcher, deshalb erkennt die App
 den Start der Amazon-Startseite und legt sich sofort darüber.
 
-**Updates** holt sich der Launcher selbst: Er sucht zweimal täglich bei GitHub nach einer neuen Version, oben rechts
+**Updates** holt sich der Launcher selbst: Er sucht alle paar Stunden und direkt nach jedem Update bei GitHub nach einer neuen Version, oben rechts
 erscheint dann „Update“. Ein Klick zeigt die Neuerungen, lädt und installiert sie; Fire OS fragt einmal zur
 Bestätigung, danach startet der Launcher neu. Von Hand: Zahnrad › Info › Updates. Einstellungen und Kacheln bleiben
 erhalten. Alternativ geht weiterhin `adb install -r` mit anschließendem `am force-stop`.

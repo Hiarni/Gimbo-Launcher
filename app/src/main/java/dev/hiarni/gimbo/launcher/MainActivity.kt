@@ -186,6 +186,7 @@ class MainActivity : ComponentActivity() {
         visible = true
         I18n.apply(config.language)
         online = isOnline()
+        if (config.autoUpdate && online && Updater.dueForCheck(this)) lifecycleScope.launch { Updater.check(this@MainActivity) }
         ImageCache.retryMissing()
         refresh()
         resumeCount++

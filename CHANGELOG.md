@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.15.3
+
+- Neue Versionen erscheinen schneller: Prüfung nach jedem Update sofort und danach alle 3 Stunden · New versions show up sooner: checked right after every update and then every 3 hours
+
 ## 1.15.2
 
 - Banner im Fire-TV-Menü wird wieder angezeigt · Banner in the Fire TV menu shows up again
