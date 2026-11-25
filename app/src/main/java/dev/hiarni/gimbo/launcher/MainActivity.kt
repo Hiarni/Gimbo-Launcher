@@ -86,6 +86,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        created = true
         ContextCompat.registerReceiver(
             this,
             packageReceiver,
@@ -278,6 +279,8 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         @Volatile var visible = false
+
+        @Volatile var created = false
 
         private val NavKeyCodes = setOf(
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT,

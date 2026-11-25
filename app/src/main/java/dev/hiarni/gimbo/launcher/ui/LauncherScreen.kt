@@ -306,8 +306,20 @@ fun LauncherScreen(
         TextEditing.active = false
         OkGuard.swallow = false
     }
+    fun focusFirstTile() {
+        focusedId = config.tiles.firstOrNull()?.id
+        focusedItem = null
+        AppLauncher.lastFocusedTileId = focusedId
+        AppLauncher.lastFocusedItemId = null
+    }
     LaunchedEffect(homeKey) {
-        if (homeKey > 0) resetForHome()
+        if (homeKey <= 0) return@LaunchedEffect
+        resetForHome()
+        if (editable && config.homeToFirst && sheets.isEmpty()) {
+            focusFirstTile()
+            runCatching { tileListState.scrollToItem(0) }
+            focusTick++
+        }
     }
     val request = HomeRequests.sheet
     LaunchedEffect(request, homeKey) {
@@ -328,7 +340,11 @@ fun LauncherScreen(
             resetForHome()
             pageScroll.scrollTo(0)
         }
-        if (refreshKey > 0 && movingId == null && sheets.isEmpty()) {
+        if (refreshKey > 0 && movingId == null && sheets.isEmpty() && config.homeToFirst) {
+            focusFirstTile()
+            runCatching { tileListState.scrollToItem(0) }
+            focusTick++
+        } else if (refreshKey > 0 && movingId == null && sheets.isEmpty()) {
             AppLauncher.lastFocusedTileId?.let { id -> if (config.tiles.any { it.id == id }) focusedId = id }
             val itemKey = AppLauncher.lastFocusedItemId
             val row = if (itemKey == null) null else rows.firstOrNull { r -> r.items.any { it.key == itemKey } }

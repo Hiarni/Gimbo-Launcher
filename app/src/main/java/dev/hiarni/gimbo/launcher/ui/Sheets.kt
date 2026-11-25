@@ -363,6 +363,7 @@ fun SettingsSheet(
         SheetSection(tr("System", "System"))
         SheetRow(tr("Sprache", "Language"), value = config.language.label, onClick = onPickLanguage)
         ToggleRow(tr("Töne", "Sounds"), config.sounds) { onChange(config.copy(sounds = it)) }
+        ToggleRow(tr("Nach Home zur ersten Kachel", "Go to the first tile after Home"), config.homeToFirst) { onChange(config.copy(homeToFirst = it)) }
         SheetRow(tr("Einstellungen sichern", "Back up settings"), value = tr("Download-Ordner", "Download folder"), onClick = onExport)
         SheetRow(tr("Sicherung wiederherstellen", "Restore backup"), onClick = onImport)
         SheetRow(tr("Fire-TV-Einstellungen", "Fire TV settings"), onClick = onFireTvSettings)

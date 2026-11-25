@@ -121,6 +121,7 @@ data class LauncherConfig(
     val panelStyle: PanelStyle = PanelStyle.Glas,
     val language: AppLanguage = AppLanguage.System,
     val autoUpdate: Boolean = true,
+    val homeToFirst: Boolean = false,
 ) {
     fun rowOn(source: Source): Boolean = source !in rowOff
 
@@ -228,6 +229,7 @@ object TileStore {
             .put("panelStyle", config.panelStyle.name)
             .put("language", config.language.name)
             .put("autoUpdate", config.autoUpdate)
+            .put("homeToFirst", config.homeToFirst)
             .put("tiles", tiles)
         return root.toString()
     }
@@ -288,6 +290,7 @@ object TileStore {
             colorIcons = root.optBoolean("colorIcons", true),
             language = runCatching { AppLanguage.valueOf(root.getString("language")) }.getOrDefault(AppLanguage.System),
             autoUpdate = root.optBoolean("autoUpdate", true),
+            homeToFirst = root.optBoolean("homeToFirst", false),
             panelStyle = runCatching { PanelStyle.valueOf(root.getString("panelStyle")) }.getOrElse {
                 if (root.optBoolean("panels", true)) PanelStyle.Glas else PanelStyle.Aus
             },

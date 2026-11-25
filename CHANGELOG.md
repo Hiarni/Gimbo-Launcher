@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.15.4
+
+- Nach dem Einschalten holt sich der Launcher nicht mehr nach vorne, wenn schon eine App läuft · After switching on, the launcher no longer jumps to the front while an app is already running
+- Neue Einstellung: nach Home zur ersten Kachel · New setting: go to the first tile after Home
+
 ## 1.15.3
 
 - Neue Versionen erscheinen schneller: Prüfung nach jedem Update sofort und danach alle 3 Stunden · New versions show up sooner: checked right after every update and then every 3 hours

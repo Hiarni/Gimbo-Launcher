@@ -185,7 +185,8 @@ class BootReceiver : BroadcastReceiver() {
         val prefs = context.getSharedPreferences("gimbo", Context.MODE_PRIVATE)
         val updated = intent.action == Intent.ACTION_MY_PACKAGE_REPLACED && prefs.getBoolean(Updater.KEY_REOPEN, false)
         if (updated) prefs.edit().remove(Updater.KEY_REOPEN).apply()
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED || updated) HomeWatchService.openLauncher(context)
+        val boot = intent.action == Intent.ACTION_BOOT_COMPLETED && !MainActivity.created
+        if (boot || (updated && !MainActivity.visible)) HomeWatchService.openLauncher(context)
     }
 }
 
