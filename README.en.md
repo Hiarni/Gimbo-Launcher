@@ -1,6 +1,6 @@
 <div align="center">
 
-🇩🇪 <a href="README.md">Deutsch</a> &nbsp;·&nbsp; 🇬🇧 <b>English</b>
+<img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1e9-1f1ea.svg" width="18" alt="DE"> <a href="README.md">Deutsch</a> &nbsp;·&nbsp; <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1ec-1f1e7.svg" width="18" alt="GB"> <b>English</b>
 
 <img src="docs/icon.png" width="112" alt="Gimbo Launcher">
 
