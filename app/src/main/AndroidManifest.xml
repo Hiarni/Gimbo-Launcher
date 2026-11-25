@@ -68,6 +68,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:banner="@drawable/banner"
             android:clearTaskOnLaunch="true"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize|uiMode|density|fontScale|locale|layoutDirection"
             android:exported="true"

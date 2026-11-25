@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.15.2
+
+- Banner im Fire-TV-Menü wird wieder angezeigt · Banner in the Fire TV menu shows up again
+
 ## 1.15.1
 
 - Updates sind oben rechts als farbiger Knopf deutlich sichtbar · Updates show up clearly as a colored button at the top right
