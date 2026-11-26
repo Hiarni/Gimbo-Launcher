@@ -80,7 +80,7 @@ Bedienung: **☰** oder **OK lang** öffnet das Menü einer Kachel, das Zahnrad 
 
 ![Weiterschauen](docs/weiterschauen.png)
 
-Jede Quelle bekommt eine eigene Reihe unter den Kacheln, etwa „Weiterschauen · Jellyfin“. Ab zwei Reihen gleitet die
+Jede Quelle bekommt eine eigene Reihe unter den Kacheln, mit „Weiterschauen“ und klein daneben der Quelle. Ab zwei Reihen gleitet die
 Startseite beim Hinunterscrollen nach oben, Uhr und Wetter werden klein, und die Reihen lassen sich von oben nach unten
 durchblättern. Einrichten unter Zahnrad › Weiterschauen; dort lassen sich die Reihen auch umsortieren und abschalten.
 

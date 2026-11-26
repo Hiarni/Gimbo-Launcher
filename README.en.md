@@ -80,7 +80,7 @@ Controls: **☰** or **long-press OK** opens a tile's menu, the gear opens the s
 
 ![Continue watching](docs/en/weiterschauen.png)
 
-Every source gets its own row below the tiles, such as "Continue watching · Jellyfin". With two or more rows the home
+Every source gets its own row below the tiles, titled "Continue watching" with the source shown small next to it. With two or more rows the home
 screen slides up as you scroll down, clock and weather shrink, and you can browse the rows from top to bottom. Set it up
 under Gear › Continue watching; that's also where you reorder and switch off rows.
 
