@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.State
 import androidx.compose.ui.layout.positionInRoot
@@ -84,9 +83,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageShader
-import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
@@ -139,7 +135,6 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
-import kotlin.random.Random
 
 // Maße und Konstanten
 private val NavKeys = setOf(
@@ -1068,7 +1063,6 @@ private fun BackdropLayer(config: LauncherConfig, focused: Tile?) {
                 else -> Palette.Neutral to Palette.Neutral
             }
             AuroraBackground(a, b)
-            Grain()
         }
         Backdrop.Tageszeit -> {
             val colors by produceState(daytimeColors()) {
@@ -1078,11 +1072,9 @@ private fun BackdropLayer(config: LauncherConfig, focused: Tile?) {
                 }
             }
             AuroraBackground(colors.first, colors.second)
-            Grain()
         }
         Backdrop.Schlicht -> {
             QuietBackground()
-            Grain()
         }
         Backdrop.Bild -> {
             val path = config.backdropImage
@@ -1108,22 +1100,32 @@ private fun BackdropLayer(config: LauncherConfig, focused: Tile?) {
         }
         else -> {
             AuroraBackground(Color(config.backdrop.a), Color(config.backdrop.b))
-            Grain()
         }
     }
 }
 
+// Verläufe werden einmal geglättet (mit Dithering) in ein Bild gezeichnet und weich hochskaliert:
+// kein Rauschen, keine sichtbaren Farbstufen
 @Composable
 private fun QuietBackground() {
-    Canvas(Modifier.fillMaxSize()) {
-        drawRect(Palette.Base)
-        drawRect(
-            Brush.radialGradient(
-                listOf(Color(0xFF1B2A6B).copy(alpha = 0.55f), Color.Transparent),
-                center = Offset(size.width * 0.5f, -size.height * 0.1f),
-                radius = size.width * 0.75f,
-            ),
+    val image = remember {
+        val w = 480
+        val h = 270
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bmp)
+        canvas.drawColor(Palette.Base.toArgb())
+        val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG or android.graphics.Paint.DITHER_FLAG)
+        paint.shader = android.graphics.RadialGradient(
+            w * 0.5f, -h * 0.1f, w * 0.75f,
+            intArrayOf(Color(0xFF1B2A6B).copy(alpha = 0.55f).toArgb(), android.graphics.Color.TRANSPARENT),
+            null,
+            android.graphics.Shader.TileMode.CLAMP,
         )
+        canvas.drawRect(0f, 0f, w.toFloat(), h.toFloat(), paint)
+        bmp.asImageBitmap()
+    }
+    Canvas(Modifier.fillMaxSize()) {
+        drawImage(image, dstSize = IntSize(size.width.toInt(), size.height.toInt()), filterQuality = FilterQuality.Low)
     }
 }
 
@@ -1131,7 +1133,7 @@ private fun QuietBackground() {
 private fun AuroraBackground(accentA: Color, accentB: Color) {
     val a by animateColorAsState(accentA, tween(1400), label = "auroraA")
     val b by animateColorAsState(accentB, tween(1400), label = "auroraB")
-    val frame = remember { AuroraFrame(384, 216) }
+    val frame = remember { AuroraFrame(480, 270) }
     var t by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         val start = SystemClock.uptimeMillis()
@@ -1155,7 +1157,7 @@ private class AuroraFrame(private val w: Int, private val h: Int) {
     private val bitmap: Bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val image = bitmap.asImageBitmap()
     private val canvas = android.graphics.Canvas(bitmap)
-    private val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+    private val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG or android.graphics.Paint.DITHER_FLAG)
     private val base = Palette.Base.toArgb()
     private val deep = Color(0xFF1B2A6B)
     private val night = Color(0xFF0E3B4F)
@@ -1187,23 +1189,6 @@ private class AuroraFrame(private val w: Int, private val h: Int) {
             android.graphics.Shader.TileMode.CLAMP,
         )
         canvas.drawCircle(x, y, radius, paint)
-    }
-}
-
-@Composable
-private fun Grain() {
-    val brush = remember {
-        val size = 128
-        val rnd = Random(7)
-        val pixels = IntArray(size * size) {
-            val v = rnd.nextInt(256)
-            (rnd.nextInt(18) shl 24) or (v shl 16) or (v shl 8) or v
-        }
-        val bmp = Bitmap.createBitmap(pixels, size, size, Bitmap.Config.ARGB_8888)
-        ShaderBrush(ImageShader(bmp.asImageBitmap(), TileMode.Repeated, TileMode.Repeated))
-    }
-    Canvas(Modifier.fillMaxSize().graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }) {
-        drawRect(brush)
     }
 }
 

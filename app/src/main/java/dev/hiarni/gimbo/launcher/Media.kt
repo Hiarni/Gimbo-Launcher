@@ -29,8 +29,10 @@ enum class Source(val title: String) {
 
     val label: String get() = if (this == Recent) tr("Zuletzt genutzt", "Recently used") else title
 
-    val rowTitle: String
-        get() = if (this == Recent) tr("Zuletzt genutzt", "Recently used") else trf("Weiterschauen · {0}", "Continue watching · {0}", title)
+    // Reihen-Überschrift und daneben klein die Quelle
+    val heading: String
+        get() = if (this == Recent) tr("Zuletzt genutzt", "Recently used") else tr("Weiterschauen", "Continue watching")
+    val tag: String? get() = if (this == Recent) null else title
 
     companion object {
         val DefaultOrder = listOf(Jellyfin, Plex, Emby, Kodi, Recent)

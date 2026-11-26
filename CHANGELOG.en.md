@@ -12,6 +12,12 @@
 
 </div>
 
+## 1.16.2
+
+- Smooth backgrounds without noise
+- Update button with a soft glow instead of a hard-edged frame
+- Row heading "Continue watching" with the source small next to it, text easy to read on any background
+
 ## 1.16.1
 
 - Sharper text for clock and weather, also at larger sizes and when the continue watching rows need room

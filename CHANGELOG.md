@@ -12,6 +12,12 @@
 
 </div>
 
+## 1.16.2
+
+- Hintergründe glatt und ohne Rauschen
+- Update-Knopf mit weichem Leuchten statt kantigem Rahmen
+- Reihen-Überschrift „Weiterschauen“ mit der Quelle klein daneben, Texte auf jedem Hintergrund gut lesbar
+
 ## 1.16.1
 
 - Schärfere Schrift bei Uhr und Wetter, auch in größerer Einstellung und wenn die Weiterschauen-Reihen Platz brauchen

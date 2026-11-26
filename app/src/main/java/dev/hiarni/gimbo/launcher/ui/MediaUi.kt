@@ -39,6 +39,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
@@ -174,8 +176,12 @@ private fun MediaShelf(
                 true
             },
     ) {
-        Row(Modifier.padding(start = 68.dp, bottom = 4.dp), verticalAlignment = Alignment.Bottom) {
-            BasicText(row.source.rowTitle, style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, color = Palette.Text))
+        Row(Modifier.padding(start = 68.dp, bottom = 4.dp)) {
+            BasicText(row.source.heading, style = RowHeading, modifier = Modifier.alignByBaseline())
+            row.source.tag?.let {
+                Spacer(Modifier.width(12.dp))
+                BasicText(it.uppercase(), style = RowTag, modifier = Modifier.alignByBaseline())
+            }
         }
         KeepInsideEdges(64.dp) {
             LazyRow(
@@ -276,13 +282,13 @@ private fun ShelfCard(
         Spacer(Modifier.height(8.dp))
         BasicText(
             item.title,
-            style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = Palette.Text),
+            style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = Palette.Text, shadow = TextShade),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
         BasicText(
             item.subtitle,
-            style = TextStyle(fontFamily = Inter, fontSize = 13.sp, color = if (focused) Palette.TextDim else Palette.TextFaint),
+            style = TextStyle(fontFamily = Inter, fontSize = 13.sp, color = if (focused) Palette.TextDim else Palette.TextFaint, shadow = TextShade),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -674,3 +680,11 @@ fun KodiSetupSheet(onConnected: () -> Unit) {
         Note(sourceHint(Source.Kodi))
     }
 }
+
+// Leiser Schatten unter Texten, damit sie auf jedem Hintergrund (auch hellen Bildern) lesbar bleiben
+internal val TextShade = Shadow(Color.Black.copy(alpha = 0.55f), Offset(0f, 2f), 10f)
+private val RowHeading = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, color = Palette.Text, shadow = TextShade)
+private val RowTag = TextStyle(
+    fontFamily = Inter, fontWeight = FontWeight.Medium, fontSize = 12.sp, letterSpacing = 1.4.sp,
+    color = Palette.Text.copy(alpha = 0.5f), shadow = TextShade,
+)

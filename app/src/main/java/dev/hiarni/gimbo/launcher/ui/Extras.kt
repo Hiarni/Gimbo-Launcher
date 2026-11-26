@@ -27,6 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
+import android.graphics.Bitmap
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -186,16 +190,19 @@ internal fun UpdateButton(text: String, enabled: Boolean, onClick: () -> Unit) {
     val blue = Color(0xFF3D6FE8)
     Row(
         Modifier
-            .drawBehind {
-                drawRoundRect(
-                    androidx.compose.ui.graphics.Brush.radialGradient(
-                        listOf(purple.copy(alpha = 0.5f + 0.2f * p), Color.Transparent),
-                        center = center,
-                        radius = size.width * 0.75f,
-                    ),
-                    topLeft = Offset(-size.width * 0.25f, -size.height * 0.6f),
-                    size = Size(size.width * 1.5f, size.height * 2.2f),
-                )
+            .drawWithCache {
+                // weiches Leuchten in Knopfform: einmal weichgezeichnet (Software-Canvas kann Blur auch auf Fire OS)
+                val r = 26.dp.toPx()
+                val w = size.width
+                val h = size.height
+                val bmp = Bitmap.createBitmap((w + 2 * r).toInt().coerceAtLeast(1), (h + 2 * r).toInt().coerceAtLeast(1), Bitmap.Config.ARGB_8888)
+                val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG or android.graphics.Paint.DITHER_FLAG).apply {
+                    shader = android.graphics.LinearGradient(r, 0f, r + w, 0f, purple.toArgb(), blue.toArgb(), android.graphics.Shader.TileMode.CLAMP)
+                    maskFilter = android.graphics.BlurMaskFilter(r * 0.5f, android.graphics.BlurMaskFilter.Blur.NORMAL)
+                }
+                android.graphics.Canvas(bmp).drawRoundRect(android.graphics.RectF(r + 4f, r + 6f, r + w - 4f, r + h), h / 2, h / 2, paint)
+                val glow = bmp.asImageBitmap()
+                onDrawBehind { drawImage(glow, topLeft = Offset(-r, -r), alpha = 0.55f + 0.35f * p) }
             }
             .graphicsLayer {
                 val s = 1f + 0.08f * p
