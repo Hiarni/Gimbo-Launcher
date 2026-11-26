@@ -12,6 +12,11 @@
 
 </div>
 
+## 1.16.1
+
+- Schärfere Schrift bei Uhr und Wetter, auch in größerer Einstellung und wenn die Weiterschauen-Reihen Platz brauchen
+- App-Icons und Banner werden nicht mehr gestaucht
+
 ## 1.16.0
 
 - Neues App-Icon, auch als Kachel in der App-Reihe von Fire OS

@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.LruCache
 import android.provider.MediaStore
@@ -17,6 +18,8 @@ import org.json.JSONObject
 import java.io.File
 import java.util.UUID
 import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 // Kacheln und Einstellungen
 enum class TileStyle(private val de: String, private val en: String) {
@@ -426,7 +429,7 @@ object InstalledApps {
 
     fun icon(pm: PackageManager, pkg: String): Bitmap? = ImageCache.get(iconKey(pkg)) {
         try {
-            pm.getApplicationIcon(pkg).toBitmap(192, 192)
+            pm.getApplicationIcon(pkg).toFitBitmap(192, 192, fill = false)
         } catch (_: Exception) {
             null
         }
@@ -436,10 +439,28 @@ object InstalledApps {
         try {
             val drawable = pm.getApplicationBanner(pkg)
                 ?: AppResolver.launchIntent(pm, pkg)?.let { pm.getActivityBanner(it) }
-            drawable?.toBitmap(640, 360)
+            drawable?.toFitBitmap(640, 360, fill = true)
         } catch (_: Exception) {
             null
         }
+    }
+
+    // Ohne Verzerren zeichnen. fill = false: mittig in w × h einpassen, Rest transparent (Icons).
+    // fill = true: eigenes Seitenverhältnis behalten, höchstens w × h groß; die Kachel schneidet beim Anzeigen zu (Banner).
+    private fun Drawable.toFitBitmap(w: Int, h: Int, fill: Boolean): Bitmap {
+        val iw = intrinsicWidth
+        val ih = intrinsicHeight
+        if (iw <= 0 || ih <= 0 || iw.toLong() * h == ih.toLong() * w) return toBitmap(w, h)
+        val scale = min(w.toFloat() / iw, h.toFloat() / ih)
+        val dw = (iw * scale).roundToInt().coerceIn(1, w)
+        val dh = (ih * scale).roundToInt().coerceIn(1, h)
+        if (fill) return toBitmap(dw, dh)
+        val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val old = copyBounds()
+        setBounds((w - dw) / 2, (h - dh) / 2, (w - dw) / 2 + dw, (h - dh) / 2 + dh)
+        draw(Canvas(out))
+        bounds = old
+        return out
     }
 
     fun guessColor(icon: Bitmap): Long {

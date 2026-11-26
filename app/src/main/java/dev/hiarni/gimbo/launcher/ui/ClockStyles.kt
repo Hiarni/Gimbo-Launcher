@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -35,8 +36,10 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,6 +48,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,15 +123,21 @@ internal fun Modifier.fitHeight(max: androidx.compose.ui.unit.Dp): Modifier = la
     }
 }
 
-internal fun Modifier.scaled(factor: Float): Modifier = layout { measurable, constraints ->
-    val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
-    val w = (placeable.width * factor).roundToInt()
-    val h = (placeable.height * factor).roundToInt()
-    layout(w, h) {
-        placeable.placeWithLayer((w - placeable.width) / 2, (h - placeable.height) / 2) {
-            scaleX = factor
-            scaleY = factor
-        }
+// Vergrößert über die Dichte statt über eine Grafik-Ebene: Schrift und Linien werden in echter Größe
+// gezeichnet und bleiben scharf (Fire OS rastert Text in skalierten Ebenen nur in gerundeter Größe).
+// Sieht aus wie die frühere Ebenen-Skalierung: Inhalt bekommt die Grenzen × factor, in dp also dieselben.
+@Composable
+internal fun Scaled(factor: Float, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    val base = LocalDensity.current
+    Layout(
+        content = {
+            CompositionLocalProvider(LocalDensity provides Density(base.density * factor, base.fontScale), content = content)
+        },
+        modifier = modifier,
+    ) { measurables, constraints ->
+        fun scale(v: Int) = if (v == Constraints.Infinity) v else (v * factor).roundToInt()
+        val placeable = measurables.first().measure(Constraints(maxWidth = scale(constraints.maxWidth), maxHeight = scale(constraints.maxHeight)))
+        layout(placeable.width, placeable.height) { placeable.place(0, 0) }
     }
 }
 

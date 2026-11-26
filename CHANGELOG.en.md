@@ -12,6 +12,11 @@
 
 </div>
 
+## 1.16.1
+
+- Sharper text for clock and weather, also at larger sizes and when the continue watching rows need room
+- App icons and banners are no longer squished
+
 ## 1.16.0
 
 - New app icon, also as the tile in the Fire OS app row

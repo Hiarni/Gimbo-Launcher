@@ -1,11 +1,14 @@
 package dev.hiarni.gimbo.launcher.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -35,6 +38,14 @@ fun HomeLayout(
     val lastReported = remember { floatArrayOf(-1f) }
     val tilesSlot = remember(tiles) { arrayOfNulls<@Composable () -> Unit>(1) }
     val tilesSlotScale = remember(tiles) { floatArrayOf(Float.NaN) }
+    // Der Kopf wird über die Dichte verkleinert statt über eine Grafik-Ebene, damit die Schrift scharf bleibt.
+    val headerScale = remember { mutableFloatStateOf(1f) }
+    val headerSlot = remember(header) {
+        @Composable {
+            val d = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(d.density * headerScale.floatValue, d.fontScale), content = header)
+        }
+    }
     SubcomposeLayout(modifier) { constraints ->
         val width = constraints.maxWidth
         val height = constraints.maxHeight
@@ -43,8 +54,9 @@ fun HomeLayout(
         val padBottom = bottomPadding.roundToPx()
         val gap = (if (shelf != null) 14.dp else 28.dp).roundToPx()
 
-        val headerPlaceables = subcompose("header", header).map { it.measure(loose) }
-        val headerNow = headerPlaceables.maxOfOrNull { it.height } ?: 0
+        val drawn = headerScale.floatValue
+        val headerPlaceables = subcompose("header", headerSlot).map { it.measure(Constraints(maxWidth = (width * drawn).roundToInt())) }
+        val headerNow = ((headerPlaceables.maxOfOrNull { it.height } ?: 0) / drawn).roundToInt()
         if (!collapsed) expandedHeader[0] = maxOf(expandedHeader[0], headerNow)
         else if (expandedHeader[0] == 0) expandedHeader[0] = headerNow
         val headerRef = expandedHeader[0]
@@ -63,6 +75,7 @@ fun HomeLayout(
             lastReported[0] = factor
             HomeFit.factor.floatValue = factor
         }
+        if (kotlin.math.abs(factor - drawn) > 0.002f) headerScale.floatValue = factor
         val tileScale = wantTileScale * factor
         if (tilesSlot[0] == null || tilesSlotScale[0] != tileScale) {
             tilesSlotScale[0] = tileScale
@@ -92,12 +105,17 @@ fun HomeLayout(
         }
 
         layout(width, height) {
+            // Bis der Kopf in der neuen Größe gezeichnet ist (ein Bild lang), gleicht eine Ebene die Differenz aus
+            val fix = factor / drawn
             headerPlaceables.forEach { pl ->
                 val x = (width - pl.width) / 2
-                val y = headerTop - (pl.height * (1f - factor) / 2f).roundToInt()
-                pl.placeWithLayer(x, y) {
-                    scaleX = factor
-                    scaleY = factor
+                if (kotlin.math.abs(fix - 1f) < 0.002f) {
+                    pl.place(x, headerTop)
+                } else {
+                    pl.placeWithLayer(x, headerTop - (pl.height * (1f - fix) / 2f).roundToInt()) {
+                        scaleX = fix
+                        scaleY = fix
+                    }
                 }
             }
             var y = top + headerZone + gap - lift

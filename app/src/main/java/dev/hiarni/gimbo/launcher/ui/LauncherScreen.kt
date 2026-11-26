@@ -1232,20 +1232,19 @@ internal fun Header(
     val current = weather?.takeIf { hourTick * 3_600_000L - it.fetchedAt < 6 * 3_600_000L }
     CompositionLocalProvider(LocalPanels provides config.panelStyle) {
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        ClockFace(config.clockStyle, accent, current, Modifier.scaled(scale))
+        Scaled(scale) { ClockFace(config.clockStyle, accent, current) }
         if (current != null) key(hourTick) {
             val weather = current
             AnimatedVisibility(visible = !collapsed) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Spacer(Modifier.height(20.dp * size))
-                    WeatherPanel(
-                        config.weatherStyle, weather, config.colorIcons, config.weatherPlace.name,
-                        Modifier.scaled(size),
-                    )
+                    Scaled(size) {
+                        WeatherPanel(config.weatherStyle, weather, config.colorIcons, config.weatherPlace.name)
+                    }
                 }
             }
             AnimatedVisibility(visible = collapsed) {
-                WeatherMini(weather, config.colorIcons, Modifier.padding(top = 8.dp).scaled(size.coerceAtMost(1.2f)))
+                Scaled(size.coerceAtMost(1.2f), Modifier.padding(top = 8.dp)) { WeatherMini(weather, config.colorIcons) }
             }
         }
     }
